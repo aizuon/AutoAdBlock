@@ -18,6 +18,7 @@ namespace AutoUpdater
         public static void Start()
         {
             Log = new Log(nameof(Updater));
+            Log.Write("Starting...");
 
 #if !DEBUG
             ServiceLoop = new ThreadLoop(TimeSpan.FromHours(2), Service);
@@ -29,6 +30,8 @@ namespace AutoUpdater
 
         public static void Stop()
         {
+            Log.Write("Stopping...");
+
             ServiceLoop.Stop();
 
             Log.Dispose();
