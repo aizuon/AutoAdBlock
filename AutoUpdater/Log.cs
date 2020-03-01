@@ -18,7 +18,7 @@ namespace AutoUpdater
         public void Write(string text)
         {
             string timestamp = DateTime.Now.ToString();
-            string log = $"{p_ModuleName} [{timestamp}] {text}";
+            string log = $"[{timestamp}] {p_ModuleName} {text}";
 
             p_LogStreamWriter.WriteLine(log);
             p_LogStreamWriter.Flush();
