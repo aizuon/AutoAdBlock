@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\File.cs" />
+    <Compile Include="Networking\DnsUtils.cs" />
     <Compile Include="Networking\WebClient.cs" />
     <Compile Include="Security\Hashing\MD5.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

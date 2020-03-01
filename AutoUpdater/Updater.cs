@@ -80,6 +80,9 @@ namespace AutoUpdater
                 Environment.Exit(5);
             }
 
+            Log.Write("Flushing dns cache...");
+            DnsUtils.FlushCache();
+
             Log.Write("Updated hosts file.");
         }
     }
