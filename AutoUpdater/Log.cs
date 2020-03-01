@@ -1,32 +1,47 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Text;
 
 namespace AutoUpdater
 {
     public class Log : IDisposable
     {
-        private readonly System.IO.StreamWriter p_LogStreamWriter;
+        private static System.IO.StreamWriter s_LogStreamWriter;
+        private static readonly object s_WriteLock = new object();
+        private static readonly ConcurrentDictionary<string, Log> s_Logs = new ConcurrentDictionary<string, Log>();
 
         private readonly string p_ModuleName;
+        private readonly string p_RawModuleName;
 
         public Log(string moduleName)
         {
-            p_ModuleName = $"[{moduleName.ToUpperInvariant()}]";
+            p_RawModuleName = moduleName;
+            p_ModuleName = $"[{p_RawModuleName.ToUpperInvariant()}]";
 
-            p_LogStreamWriter = new System.IO.StreamWriter("log.txt", true, System.Text.Encoding.Default);
+            if (s_Logs.Count == 0)
+                s_LogStreamWriter = new System.IO.StreamWriter("log.txt", true, Encoding.Default);
+
+            s_Logs.TryAdd(p_RawModuleName, this);
         }
 
         public void Write(string text)
         {
-            string timestamp = DateTime.Now.ToString();
-            string log = $"[{timestamp}] {p_ModuleName} {text}";
+            lock (s_WriteLock)
+            {
+                string timestamp = DateTime.Now.ToString();
+                string log = $"[{timestamp}] {p_ModuleName} {text}";
 
-            p_LogStreamWriter.WriteLine(log);
-            p_LogStreamWriter.Flush();
+                s_LogStreamWriter.WriteLine(log);
+                s_LogStreamWriter.Flush();
+            }
         }
 
         public void Dispose()
         {
-            p_LogStreamWriter.Close();
+            s_Logs.TryRemove(p_RawModuleName, out var _);
+
+            if (s_Logs.Count == 0)
+                s_LogStreamWriter.Close();
         }
     }
 }
