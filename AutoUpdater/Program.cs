@@ -27,6 +27,8 @@ namespace AutoUpdater
 
             Log.Write("Stopping...");
 
+            Updater.Stop();
+
             Log.Dispose();
         }
     }
