@@ -6,6 +6,8 @@ namespace AutoUpdater
 {
     public class Log : IDisposable
     {
+        private static readonly string s_Path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt");
+
         private static System.IO.StreamWriter s_LogStreamWriter;
         private static readonly object s_WriteLock = new object();
         private static readonly ConcurrentDictionary<string, Log> s_Logs = new ConcurrentDictionary<string, Log>();
@@ -19,7 +21,7 @@ namespace AutoUpdater
             p_ModuleName = $"[{p_RawModuleName.ToUpperInvariant()}]";
 
             if (s_Logs.Count == 0)
-                s_LogStreamWriter = new System.IO.StreamWriter("log.txt", true, Encoding.Default);
+                s_LogStreamWriter = new System.IO.StreamWriter(s_Path, true, Encoding.Default);
 
             s_Logs.TryAdd(p_RawModuleName, this);
         }

@@ -3,6 +3,7 @@ using BaseLib.Networking;
 using BaseLib.Security.Hashing;
 using BaseLib.Threading;
 using System;
+using System.Windows.Forms;
 
 namespace AutoUpdater
 {
@@ -20,11 +21,8 @@ namespace AutoUpdater
             Log = new Log(nameof(Updater));
             Log.Write("Starting...");
 
-#if !DEBUG
-            ServiceLoop = new ThreadLoop(TimeSpan.FromHours(2), Service);
-#else
-            ServiceLoop = new ThreadLoop(TimeSpan.FromMinutes(1), Service);
-#endif
+            ServiceLoop = new ThreadLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
+
             ServiceLoop.Start();
         }
 
@@ -37,10 +35,15 @@ namespace AutoUpdater
             Log.Dispose();
         }
 
-        private static void Service(TimeSpan delta)
+        public static void UpdateInterval()
         {
-            Log.Write("Start update.");
+            ServiceLoop.Stop();
+            ServiceLoop = new ThreadLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
+            ServiceLoop.Start();
+        }
 
+        public static UpdateResult Update()
+        {
             Log.Write("Hashing local hosts...");
             string localHash = string.Empty;
             try
@@ -51,8 +54,7 @@ namespace AutoUpdater
             {
                 Log.Write("Insufficient permissions to read hosts, please run the program as administrator!");
 
-                Stop();
-                Environment.Exit(5);
+                return UpdateResult.Failure;
             }
             Log.Write($"Local hash => {localHash}");
 
@@ -66,7 +68,7 @@ namespace AutoUpdater
             {
                 Log.Write("Hosts is up to date, returning.");
 
-                return;
+                return UpdateResult.AlreadyUpdated;
             }
 
             Log.Write("Remote hosts hash doesn't match local, updating...");
@@ -79,14 +81,25 @@ namespace AutoUpdater
             {
                 Log.Write("Insufficient permissions to replace hosts, please run the program as administrator!");
 
-                Stop();
-                Environment.Exit(5);
+                return UpdateResult.Failure;
             }
 
             Log.Write("Flushing dns cache...");
             DnsUtils.FlushCache();
 
             Log.Write("Updated hosts file.");
+
+            return UpdateResult.Updated;
+        }
+
+        private static void Service(TimeSpan delta)
+        {
+            Log.Write("Start update.");
+
+            var result = Update();
+
+            if (result == UpdateResult.Failure)
+                Application.Exit();
         }
     }
 }

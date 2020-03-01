@@ -1,6 +1,7 @@
-﻿using BaseLib.Registry;
-using System.Diagnostics;
+﻿using AutoUpdater.Forms;
+using BaseLib.Registry;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace AutoUpdater
 {
@@ -8,14 +9,14 @@ namespace AutoUpdater
     {
         private static Log Log;
 
-        private const string AssemblyName = "AutoAdBlock";
+        public const string AssemblyName = "AutoAdBlock";
 
         public static void Main()
         {
             Log = new Log(nameof(Program));
             Log.Write("Starting...");
 
-            if (!Registry.StartupExists(AssemblyName))
+            if (Config.Instance.AutoStart && !Registry.StartupExists(AssemblyName))
             {
                 Log.Write("Adding assembly to startup...");
                 Registry.SetStartup(AssemblyName, Assembly.GetExecutingAssembly().Location);
@@ -23,7 +24,15 @@ namespace AutoUpdater
 
             Updater.Start();
 
-            Process.GetCurrentProcess().WaitForExit(); //prevent main thread from exiting
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            using (var main = new MainForm())
+            {
+                if (Config.Instance.StartMinimized)
+                    Application.Run();
+                else
+                    Application.Run(main);
+            }
 
             Log.Write("Stopping...");
 
