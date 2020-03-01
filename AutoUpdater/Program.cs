@@ -8,7 +8,7 @@ namespace AutoUpdater
     {
         public static void Main()
         {
-            Registry.SetStartup("AutoAdBlock", System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            Registry.SetStartup("AutoAdBlock", Assembly.GetExecutingAssembly().Location);
 
             Updater.Start();
 
