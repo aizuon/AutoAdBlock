@@ -3,6 +3,7 @@ using BaseLib.Networking;
 using BaseLib.Security.Hashing;
 using BaseLib.Threading;
 using System;
+using System.Text;
 using System.Windows.Forms;
 
 namespace AutoUpdater
@@ -11,6 +12,7 @@ namespace AutoUpdater
     {
         private const string HostsUrl = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts";
         private const string HostsPath = @"C:\Windows\System32\drivers\etc\hosts";
+        private static string s_LastUpdate_TempFile;
 
         private static Log Log;
 
@@ -21,9 +23,40 @@ namespace AutoUpdater
             Log = new Log(nameof(Updater));
             Log.Write("Starting...");
 
+            s_LastUpdate_TempFile = System.IO.Path.GetTempPath() + Program.AssemblyName + ".txt";
+
             ServiceLoop = new ThreadLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
 
             ServiceLoop.Start();
+        }
+
+        public static void WriteTempFile(UpdateResult result, DateTime time)
+        {
+            using (var sw = new System.IO.StreamWriter(s_LastUpdate_TempFile, false, Encoding.Default))
+            {
+                sw.WriteLine(result.ToString());
+                sw.WriteLine(time.ToString());
+            }
+        }
+
+        public static Tuple<UpdateResult, DateTime> ReadTempFile()
+        {
+            try
+            {
+                using (var sr = new System.IO.StreamReader(s_LastUpdate_TempFile, Encoding.Default))
+                {
+                    string _result = sr.ReadLine();
+                    var result = (UpdateResult)Enum.Parse(typeof(UpdateResult), _result);
+                    string _time = sr.ReadLine();
+                    var time = DateTime.Parse(_time);
+
+                    return new Tuple<UpdateResult, DateTime>(result, time);
+                }
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return null;
+            }
         }
 
         public static void Stop()
@@ -97,6 +130,8 @@ namespace AutoUpdater
             Log.Write("Start update.");
 
             var result = Update();
+
+            WriteTempFile(result, DateTime.Now);
 
             if (result == UpdateResult.Failure)
                 Application.Exit();

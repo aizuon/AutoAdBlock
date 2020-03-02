@@ -20,6 +20,29 @@ namespace AutoUpdater.Forms
 
             if (Config.Instance.StartMinimized)
                 notifyIcon1.Visible = true;
+
+            var result = Updater.ReadTempFile();
+            if (result != null)
+            {
+                switch (result.Item1)
+                {
+                    case UpdateResult.AlreadyUpdated:
+                        status.Text = "Up to date";
+                        status.ForeColor = Color.Green;
+                        break;
+
+                    case UpdateResult.Failure:
+                        status.Text = "Failure";
+                        status.ForeColor = Color.Red;
+                        break;
+
+                    case UpdateResult.Updated:
+                        status.Text = "Successful";
+                        status.ForeColor = Color.Green;
+                        lastUpdatedLabel.Text = $"Last Updated: {result.Item2.ToString()}";
+                        break;
+                }
+            }
         }
 
         private void MainForm_Resize(object sender, EventArgs e)
@@ -60,6 +83,7 @@ namespace AutoUpdater.Forms
             Log.Write("Start update.");
 
             var result = Updater.Update();
+            Updater.WriteTempFile(result, DateTime.Now);
 
             switch (result)
             {
