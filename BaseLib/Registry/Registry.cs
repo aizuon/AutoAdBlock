@@ -20,7 +20,7 @@
             {
                 object value = rk.GetValue(name);
 
-                if (value.ToString() != path)
+                if (value == null || value.ToString() != path)
                     rk.SetValue(name, path);
             }
         }
