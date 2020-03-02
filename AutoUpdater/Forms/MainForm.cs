@@ -15,8 +15,8 @@ namespace AutoUpdater.Forms
 
             InitializeComponent();
             Resize += MainForm_Resize;
-            FormClosed += MainForm_Closed;
             notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
+            FormClosed += MainForm_Closed;
 
             if (Config.Instance.StartMinimized)
                 notifyIcon1.Visible = true;
@@ -31,19 +31,20 @@ namespace AutoUpdater.Forms
             }
         }
 
-        private void MainForm_Closed(object sender, EventArgs e)
-        {
-            Log.Write("Closing...");
-            Log.Dispose();
-
-            Application.Exit();
-        }
-
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Show();
             WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
+        }
+
+        private void MainForm_Closed(object sender, EventArgs e)
+        {
+            Log.Write("Closing...");
+
+            Log.Dispose();
+
+            Application.Exit();
         }
 
         private void config_Click(object sender, EventArgs e)

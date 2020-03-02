@@ -45,7 +45,7 @@
             // status
             // 
             this.status.AutoSize = true;
-            this.status.Location = new System.Drawing.Point(21, 22);
+            this.status.Location = new System.Drawing.Point(20, 20);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(37, 13);
             this.status.TabIndex = 0;
@@ -53,7 +53,7 @@
             // 
             // update
             // 
-            this.update.Location = new System.Drawing.Point(137, 47);
+            this.update.Location = new System.Drawing.Point(140, 50);
             this.update.Name = "update";
             this.update.Size = new System.Drawing.Size(75, 23);
             this.update.TabIndex = 1;
@@ -63,7 +63,7 @@
             // 
             // config
             // 
-            this.config.Location = new System.Drawing.Point(272, 12);
+            this.config.Location = new System.Drawing.Point(270, 15);
             this.config.Name = "config";
             this.config.Size = new System.Drawing.Size(75, 23);
             this.config.TabIndex = 4;
@@ -74,7 +74,7 @@
             // lastUpdatedLabel
             // 
             this.lastUpdatedLabel.AutoSize = true;
-            this.lastUpdatedLabel.Location = new System.Drawing.Point(21, 80);
+            this.lastUpdatedLabel.Location = new System.Drawing.Point(20, 80);
             this.lastUpdatedLabel.Name = "lastUpdatedLabel";
             this.lastUpdatedLabel.Size = new System.Drawing.Size(106, 13);
             this.lastUpdatedLabel.TabIndex = 5;
@@ -84,11 +84,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(359, 106);
             this.Controls.Add(this.lastUpdatedLabel);
             this.Controls.Add(this.config);
             this.Controls.Add(this.update);
             this.Controls.Add(this.status);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.ResumeLayout(false);

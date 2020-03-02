@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
             this.updateIntervalLabel = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.autoStartCheckBox = new System.Windows.Forms.CheckBox();
@@ -38,7 +39,7 @@
             // updateIntervalLabel
             // 
             this.updateIntervalLabel.AutoSize = true;
-            this.updateIntervalLabel.Location = new System.Drawing.Point(12, 22);
+            this.updateIntervalLabel.Location = new System.Drawing.Point(15, 20);
             this.updateIntervalLabel.Name = "updateIntervalLabel";
             this.updateIntervalLabel.Size = new System.Drawing.Size(95, 13);
             this.updateIntervalLabel.TabIndex = 0;
@@ -56,7 +57,7 @@
             "16",
             "20",
             "24"});
-            this.comboBox1.Location = new System.Drawing.Point(123, 19);
+            this.comboBox1.Location = new System.Drawing.Point(120, 20);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 1;
@@ -73,7 +74,7 @@
             // 
             // save
             // 
-            this.save.Location = new System.Drawing.Point(94, 217);
+            this.save.Location = new System.Drawing.Point(100, 110);
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(75, 23);
             this.save.TabIndex = 3;
@@ -84,7 +85,7 @@
             // startMinimizedCheckBox
             // 
             this.startMinimizedCheckBox.AutoSize = true;
-            this.startMinimizedCheckBox.Location = new System.Drawing.Point(15, 82);
+            this.startMinimizedCheckBox.Location = new System.Drawing.Point(15, 80);
             this.startMinimizedCheckBox.Name = "startMinimizedCheckBox";
             this.startMinimizedCheckBox.Size = new System.Drawing.Size(97, 17);
             this.startMinimizedCheckBox.TabIndex = 4;
@@ -95,12 +96,16 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(274, 261);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(274, 141);
             this.Controls.Add(this.startMinimizedCheckBox);
             this.Controls.Add(this.save);
             this.Controls.Add(this.autoStartCheckBox);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.updateIntervalLabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "ConfigForm";
             this.Text = "Config";
             this.ResumeLayout(false);
