@@ -4,6 +4,8 @@
     {
         Updated,
         AlreadyUpdated,
+        InsufficientPermission,
+        NoInternet,
         Failure
     }
 }

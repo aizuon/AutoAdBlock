@@ -78,11 +78,11 @@ namespace AutoUpdater.Forms
             }
         }
 
-        private void update_Click(object sender, EventArgs e)
+        private async void update_Click(object sender, EventArgs e)
         {
             Log.Write("Start update.");
 
-            var result = Updater.Update();
+            var result = await Updater.Update();
             Updater.WriteTempFile(result, DateTime.Now);
 
             switch (result)

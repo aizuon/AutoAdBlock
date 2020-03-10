@@ -1,9 +1,10 @@
 ﻿using BaseLib.IO;
 using BaseLib.Networking;
 using BaseLib.Security.Hashing;
-using BaseLib.Threading;
+using BaseLib.Threading.Tasks;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AutoUpdater
@@ -16,7 +17,7 @@ namespace AutoUpdater
 
         private static Log Log;
 
-        private static ThreadLoop ServiceLoop;
+        private static TaskLoop ServiceLoop;
 
         public static void Start()
         {
@@ -25,7 +26,7 @@ namespace AutoUpdater
 
             s_LastUpdate_TempFile = System.IO.Path.GetTempPath() + Program.AssemblyName + ".txt";
 
-            ServiceLoop = new ThreadLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
+            ServiceLoop = new TaskLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
 
             ServiceLoop.Start();
         }
@@ -71,11 +72,11 @@ namespace AutoUpdater
         public static void UpdateInterval()
         {
             ServiceLoop.Stop();
-            ServiceLoop = new ThreadLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
+            ServiceLoop = new TaskLoop(TimeSpan.FromHours(Config.Instance.UpdateInterval), Service);
             ServiceLoop.Start();
         }
 
-        public static UpdateResult Update()
+        public static async Task<UpdateResult> Update()
         {
             Log.Write("Hashing local hosts...");
             string localHash = string.Empty;
@@ -85,14 +86,24 @@ namespace AutoUpdater
             }
             catch (UnauthorizedAccessException)
             {
-                Log.Write("Insufficient permissions to read hosts, please run the program as administrator!");
+                Log.Write("Insufficient permission to read hosts, please run the program as administrator!");
 
-                return UpdateResult.Failure;
+                return UpdateResult.InsufficientPermission;
             }
             Log.Write($"Local hash => {localHash}");
 
             Log.Write("Downloading remote hosts...");
-            byte[] remoteData = WebClient.DownloadData(HostsUrl);
+            byte[] remoteData = Array.Empty<byte>();
+            try
+            {
+                remoteData = await WebClient.DownloadDataTaskAsync(HostsUrl);
+            }
+            catch (System.Net.WebException)
+            {
+                Log.Write("WebException! Remote host is down or no internet connection?");
+
+                return UpdateResult.NoInternet;
+            }
             Log.Write("Hashing remote hosts...");
             string remoteHash = MD5.HashData(remoteData);
             Log.Write($"Remote hash => {remoteHash}");
@@ -112,9 +123,9 @@ namespace AutoUpdater
             }
             catch (UnauthorizedAccessException)
             {
-                Log.Write("Insufficient permissions to replace hosts, please run the program as administrator!");
+                Log.Write("Insufficient permission to replace hosts, please run the program as administrator!");
 
-                return UpdateResult.Failure;
+                return UpdateResult.InsufficientPermission;
             }
 
             Log.Write("Flushing dns cache...");
@@ -125,15 +136,15 @@ namespace AutoUpdater
             return UpdateResult.Updated;
         }
 
-        private static void Service(TimeSpan delta)
+        private static async Task Service(TimeSpan delta)
         {
             Log.Write("Start update.");
 
-            var result = Update();
+            var result = await Update();
 
             WriteTempFile(result, DateTime.Now);
 
-            if (result == UpdateResult.Failure)
+            if (result == UpdateResult.InsufficientPermission)
                 Application.Exit();
         }
     }
