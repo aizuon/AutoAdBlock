@@ -32,8 +32,8 @@ namespace BaseLib.Threading
             if (IsRunning)
                 return;
 
-            _cts = new CancellationTokenSource();
             IsRunning = true;
+            _cts = new CancellationTokenSource();
             Thread = new Thread(InternalLoop)
             {
                 IsBackground = true
@@ -94,6 +94,8 @@ namespace BaseLib.Threading
             }
 
             _time.Stop();
+            _cts.Dispose();
+            _cts = null;
             Thread = null;
             IsRunning = false;
         }

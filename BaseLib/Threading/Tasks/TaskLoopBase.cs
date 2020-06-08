@@ -32,8 +32,8 @@ namespace BaseLib.Threading.Tasks
             if (IsRunning)
                 return;
 
-            _cts = new CancellationTokenSource();
             IsRunning = true;
+            _cts = new CancellationTokenSource();
             Task = Task.Run(new Func<Task>(InternalLoop));
         }
 
@@ -87,6 +87,8 @@ namespace BaseLib.Threading.Tasks
             }
 
             _time.Stop();
+            _cts.Dispose();
+            _cts = null;
             Task = null;
             IsRunning = false;
         }
